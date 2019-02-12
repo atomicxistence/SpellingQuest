@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: PlayerSettings
   m_EditorClassIdentifier: 
   MoveSpeed: 4
-  JumpForce: 7
+  JumpForce: 7.5
   FallGravity: 3.5
   ShortJumpGravity: 3
   Shell: 0.05

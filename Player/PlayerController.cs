@@ -11,6 +11,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     private Settings playerSettings;
 
+    //TODO: change player raycasting to mimic EnemyController
     private Vector2 playerSize;
     private float horizontalMovement;
     private bool isMoving;

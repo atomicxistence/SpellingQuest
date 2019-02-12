@@ -9,7 +9,7 @@ public class EnemyController : MonoBehaviour
     [SerializeField]
     private AI enemyAI;
 
-    private float horizontalMovement;
+    private float horizontalMovement = 1f;
 
     private RaycastOrigins enemyRayOrigins;
 
@@ -68,15 +68,5 @@ public class EnemyController : MonoBehaviour
     {
         transform.localScale = new Vector2(Mathf.Sign(horizontalMovement) * -1f, transform.localScale.y);
         isMovingRight = !isMovingRight;
-    }
-
-    private void OnDrawGizmos()
-    {
-        var groundRayOrigin = isMovingRight ? enemyRayOrigins.bottomRight : enemyRayOrigins.bottomLeft;
-        var obstacleRayOrigin = isMovingRight ? enemyRayOrigins.centerRight : enemyRayOrigins.centerLeft;
-
-        Gizmos.color = Color.magenta;
-        Gizmos.DrawRay(groundRayOrigin, Vector3.down);
-        Gizmos.DrawRay(obstacleRayOrigin, new Vector3(horizontalMovement, 0f, 0f));
     }
 }
