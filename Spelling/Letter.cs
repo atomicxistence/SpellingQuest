@@ -2,6 +2,7 @@
 
 public class Letter
 {
-    public char LetterValue;
+    public char Character;
     public LetterType Type;
+    public bool Missing;
 }

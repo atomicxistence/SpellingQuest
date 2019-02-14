@@ -18,8 +18,9 @@
 
         for (int i = 0; i < wordArray.Length; i++)
         {
-            Letters[i].LetterValue = wordArray[0];
+            Letters[i].Character = wordArray[0];
             Letters[i].Type = LetterTypeEvaluation(wordArray[0]);
+            Letters[i].Missing = false;
         }
     }
 

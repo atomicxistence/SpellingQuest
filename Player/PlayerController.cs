@@ -4,50 +4,42 @@
 public class PlayerController : MonoBehaviour
 {
     private Rigidbody2D rb2d;
-    private Animator animator;
-    [SerializeField]
-    private LayerMask groundLayer;
+    private PolygonCollider2D playerCollider;
 
     [SerializeField]
-    private Settings playerSettings;
+    private MovementSettings playerMovementSettings;
+    [SerializeField]
+    private Status status;
 
-    //TODO: change player raycasting to mimic EnemyController
-    private Vector2 playerSize;
+    private RaycastOrigins playerRayOrigins;
     private float horizontalMovement;
-    private bool isMoving;
-
-    private bool isGrounded;
-    private bool isJumping;
-    private bool isHittingHead;
 
     private void Awake()
     {
         rb2d = GetComponent<Rigidbody2D>();
-        animator = GetComponent<Animator>();
-        playerSize = GetComponent<Renderer>().bounds.size;
+        playerCollider = GetComponent<PolygonCollider2D>();
     }
 
     private void Update()
     {
         GetInput();
 
-        if (isMoving)
+        if (status.IsMoving)
         {
             FlipPlayer();
         }
-
-        ChangePlayerAnimation();
     }
 
     private void FixedUpdate()
     {
-        rb2d.velocity = new Vector2(horizontalMovement * playerSettings.MoveSpeed, rb2d.velocity.y);
+        rb2d.velocity = new Vector2(horizontalMovement * playerMovementSettings.MoveSpeed, rb2d.velocity.y);
 
-        if (isJumping)
+        if (status.IsJumping)
         {
             Jump();
         }
 
+        UpdateBounds();
         GroundedCheck();
         GravityModification();
     }
@@ -55,53 +47,55 @@ public class PlayerController : MonoBehaviour
     private void GetInput()
     {
         horizontalMovement = Input.GetAxisRaw("Horizontal");
-        isMoving = Mathf.Abs(horizontalMovement) > 0;
+        status.IsMoving = Mathf.Abs(horizontalMovement) > 0;
 
-        if (isGrounded)
+        if (status.IsGrounded)
         {
-            isJumping |= Input.GetButtonDown("Jump");
+            status.IsJumping |= Input.GetButtonDown("Jump");
         }
     }
 
-        private void FlipPlayer()
+    private void FlipPlayer()
     {
         transform.localScale = new Vector2(Mathf.Sign(horizontalMovement) * 1f, transform.localScale.y);
     }
 
-    private void ChangePlayerAnimation()
-    {
-        animator.SetBool("isMoving", isMoving);
-        animator.SetBool("isJumping", !isGrounded);
-    }
-
     private void Jump()
     {
-        rb2d.AddForce(Vector2.up * playerSettings.JumpForce, ForceMode2D.Impulse);
-        isJumping = false;
-        isGrounded = false;
+        rb2d.AddForce(Vector2.up * playerMovementSettings.JumpForce, ForceMode2D.Impulse);
+        status.IsJumping = false;
+        status.IsGrounded = false;
     }
 
-    private void CeilingCheck()
+    private void UpdateBounds()
     {
-        var rayOrigin = (Vector2)transform.position + (Vector2.up * (playerSize.y * 0.5f));
-        isHittingHead = Physics2D.Raycast(rayOrigin, Vector2.up, playerSettings.Shell, groundLayer);
+        var playerBounds = playerCollider.bounds;
+
+        playerRayOrigins.bottomLeft = new Vector2(playerBounds.min.x, playerBounds.min.y);
+        playerRayOrigins.bottomRight = new Vector2(playerBounds.max.x, playerBounds.min.y);
+        playerRayOrigins.centerLeft = new Vector2(playerBounds.min.x, playerBounds.center.y);
+        playerRayOrigins.centerRight = new Vector2(playerBounds.max.x, playerBounds.center.y);
     }
 
     private void GroundedCheck()
     {
-        var rayOrigin = (Vector2)transform.position + (Vector2.down * (playerSize.y * 0.5f));
-        isGrounded = Physics2D.Raycast(rayOrigin, Vector2.down, playerSettings.Shell, groundLayer);
+        status.IsGrounded = RaycastFromOrigin(playerRayOrigins.bottomLeft) || RaycastFromOrigin(playerRayOrigins.bottomRight);
+    }
+
+    private bool RaycastFromOrigin(Vector2 origin)
+    {
+        return Physics2D.Raycast(origin, Vector2.down, playerMovementSettings.RayLength, playerMovementSettings.CollisionLayer);
     }
 
     private void GravityModification()
     {
         if (rb2d.velocity.y < 0)
         {
-            rb2d.gravityScale = playerSettings.FallGravity;
+            rb2d.gravityScale = playerMovementSettings.FallGravity;
         }
         else if (rb2d.velocity.y > 0 && !Input.GetButton("Jump"))
         {
-            rb2d.gravityScale = playerSettings.ShortJumpGravity;
+            rb2d.gravityScale = playerMovementSettings.ShortJumpGravity;
         }
         else
         {
