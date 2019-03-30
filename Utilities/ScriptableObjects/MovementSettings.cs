@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-[CreateAssetMenu (fileName = "MovementSettings", menuName = "Utility/MovementSettings")]
+[CreateAssetMenu (fileName = "MovementSettings", menuName = "Utility/Movement Settings")]
 public class MovementSettings : ScriptableObject
 {
     public float MoveSpeed;
@@ -10,5 +10,4 @@ public class MovementSettings : ScriptableObject
     public float ShortJumpGravity;
 
     public float RayLength;
-    public LayerMask CollisionLayer;
 }

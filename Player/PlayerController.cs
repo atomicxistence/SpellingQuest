@@ -9,6 +9,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     private MovementSettings playerMovementSettings;
     [SerializeField]
+    private CollisionSettings playerCollisionSettings;
+    [SerializeField]
     private Status status;
 
     private RaycastOrigins playerRayOrigins;
@@ -84,7 +86,7 @@ public class PlayerController : MonoBehaviour
 
     private bool RaycastFromOrigin(Vector2 origin)
     {
-        return Physics2D.Raycast(origin, Vector2.down, playerMovementSettings.RayLength, playerMovementSettings.CollisionLayer);
+        return Physics2D.Raycast(origin, Vector2.down, playerMovementSettings.RayLength, playerCollisionSettings.ObstacleLayer);
     }
 
     private void GravityModification()

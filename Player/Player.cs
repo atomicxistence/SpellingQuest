@@ -4,6 +4,8 @@ public class Player : MonoBehaviour
 {
     [SerializeField]
     private Status status;
+    [SerializeField]
+    private CollisionSettings collisionSettings;
 
     private Vector3 startingPosition;
     private Vector2 startingFacingDirection;
@@ -17,6 +19,8 @@ public class Player : MonoBehaviour
     public void Respawn()
     {
         status.IsDead = false;
+        gameObject.layer = collisionSettings.WhileAliveLayer.value;
+
         transform.position = startingPosition;
         transform.localScale = startingFacingDirection;
     }

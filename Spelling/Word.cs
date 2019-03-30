@@ -2,24 +2,22 @@
 {
     public Letter[] Letters { get; private set; }
 
-    private char[] wordArray;
-
     public Word(string word)
     {
         var capatilizedWord = word.ToUpper();
-        wordArray = capatilizedWord.ToCharArray();
+        char[] wordArray = capatilizedWord.ToCharArray();
 
-        CreateLetterCollection();
+        CreateLetterCollection(wordArray);
     }
 
-    private void CreateLetterCollection()
+    private void CreateLetterCollection(char[] word)
     {
-        Letters = new Letter[wordArray.Length];
+        Letters = new Letter[word.Length];
 
-        for (int i = 0; i < wordArray.Length; i++)
+        for (int i = 0; i < word.Length; i++)
         {
-            Letters[i].Character = wordArray[0];
-            Letters[i].Type = LetterTypeEvaluation(wordArray[0]);
+            Letters[i].Character = word[0];
+            Letters[i].Type = LetterTypeEvaluation(word[0]);
             Letters[i].Missing = false;
         }
     }
