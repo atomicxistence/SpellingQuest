@@ -1,47 +1,89 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using TMPro;
 
 public class QuestGenerator : MonoBehaviour
 {
     [SerializeField]
-    private WordList currentList;
+    private TMP_Text wordText;
 
-    private Queue<Word> randomizedWordQueue = new Queue<Word>();
+    private Stack<Word> currentWordStack = new Stack<Word>();
     private Word currentWord;
+    
+    private string DisplayWord => currentWord.Letters.Aggregate("", (accum, next) => accum + (next.Missing ? '_' : next.Character));
+    private bool HasDisplayWordChanged {get; set;} 
 
     private void Awake()
     {
-        if (currentList != null && currentList.Words.Count > 0)
+        var id = RetrieveWordListID();
+        var spellingList = new WordList(id);
+
+        if (spellingList != null && spellingList.Words.Count > 0)
         {
-            ShuffleWordList();
-
-            foreach (var word in currentList.Words)
-            {
-                randomizedWordQueue.Enqueue(word);
-            }
-
-            //TODO: randomly set letters in currentWord to missing
+            currentWordStack = ShuffleWordList(spellingList);
+            currentWord = GetNextQuestWord();
         }
     }
 
     private void Start()
     {
-        //TODO: display the current word and spawn the missing letters
+        HasDisplayWordChanged = true;
+        //TODO: spawn the missing letters
     }
 
-    private void ShuffleWordList()
+    private void Update()
+    {
+        if (!currentWord.Letters.Any(l => l.Missing))
+        {
+            currentWord = GetNextQuestWord();
+            HasDisplayWordChanged = true;
+        }
+
+        if (HasDisplayWordChanged)
+        {
+            wordText.SetText(DisplayWord);
+            HasDisplayWordChanged = false;
+        }
+    }
+
+    private Stack<Word> ShuffleWordList(WordList currentList)
     {
         var shuffler = new System.Random();
-        Word temp;
+        var wordStack = new Stack<Word>();
         int rng;
         int numberOfWords = currentList.Words.Count;
 
         for (int i = numberOfWords - 1; i > 0; i--)
         {
             rng = shuffler.Next(0, i + 1);
-            temp = currentList.Words[i];
-            currentList.Words[i] = currentList.Words[rng];
-            currentList.Words[rng] = temp;
+            wordStack.Push(currentList.Words[rng]);
         }
+
+        return wordStack;
+    }
+
+    private int RetrieveWordListID()
+    {
+        var idFromURL = Application.absoluteURL?.Split('/').Last();
+        return Int32.TryParse(idFromURL, out int result) ? result : 0; 
+    }
+
+    private Word GetNextQuestWord()
+    {
+        var next = currentWordStack.Pop();
+
+        var rng = new System.Random();
+        var numOfMissingLetters = next.Letters.Length / 2;
+        numOfMissingLetters = numOfMissingLetters < 2 ? 2 : numOfMissingLetters;
+
+        while(numOfMissingLetters > 0)
+        {
+            next.Letters[rng.Next(0, next.Letters.Length)].Missing = true;
+            numOfMissingLetters--;
+        }
+
+        return next;
     }
 }

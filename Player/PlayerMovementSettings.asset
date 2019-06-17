@@ -17,6 +17,3 @@ MonoBehaviour:
   FallGravity: 3.5
   ShortJumpGravity: 3
   RayLength: 0.05
-  CollisionLayer:
-    serializedVersion: 2
-    m_Bits: 1024
