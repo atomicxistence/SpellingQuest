@@ -19,7 +19,8 @@ public class Player : MonoBehaviour
     public void Respawn()
     {
         status.IsDead = false;
-        gameObject.layer = collisionSettings.WhileAliveLayer.value;
+        // LayerMask.value returns a bitmask value
+        //gameObject.layer = collisionSettings.WhileAliveLayer.value;
 
         transform.position = startingPosition;
         transform.localScale = startingFacingDirection;

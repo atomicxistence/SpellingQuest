@@ -11,8 +11,9 @@ public class PlayerCollision : MonoBehaviour
     {
         if(collision.gameObject.tag == "Enemy")
         {
+            // LayerMask.value returns a bitmask value
+            //gameObject.layer = collisionSettings.WhileDeadLayer.value;
             status.IsDead = true;
-            gameObject.layer = collisionSettings.WhileDeadLayer.value;
         }
     }
 }

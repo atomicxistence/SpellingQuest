@@ -24,7 +24,14 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        GetInput();
+        if (!status.IsDead)
+        {
+            GetInput();
+        }
+        else
+        {
+            horizontalMovement = 0;
+        }
 
         if (status.IsMoving)
         {

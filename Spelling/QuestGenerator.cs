@@ -8,44 +8,69 @@ public class QuestGenerator : MonoBehaviour
 {
     [SerializeField]
     private TMP_Text wordText;
-
     private Stack<Word> currentWordStack = new Stack<Word>();
-    private Word currentWord;
     
-    private string DisplayWord => currentWord.Letters.Aggregate("", (accum, next) => accum + (next.Missing ? '_' : next.Character));
-    private bool HasDisplayWordChanged {get; set;} 
+    private string DisplayWord => CurrentWord.Letters.Aggregate("", (accum, next) => accum + (next.Missing ? '_' : next.Character));
+    private bool HasDisplayWordChanged {get; set;}
+
+    private List<string> Alphabet {get; set;}
+    private LetterSpawn[] Spawners {get; set;} 
+    
+    public Word CurrentWord {get; private set;}
+    private Letter CurrentLetter => CurrentWord.Letters.Where(l => l.Missing).First();
+    private bool HasLettersMissing => CurrentWord.Letters.Any(x => x.Missing);
 
     private void Awake()
     {
         var id = RetrieveWordListID();
         var spellingList = new WordList(id);
 
-        if (spellingList != null && spellingList.Words.Count > 0)
+        if (spellingList.Words.Count > 0)
         {
             currentWordStack = ShuffleWordList(spellingList);
-            currentWord = GetNextQuestWord();
+            CurrentWord = GetNextQuestWord();
         }
+
+        Alphabet = Enumerable.Range('a', 26)
+                            .Select(x => Convert.ToChar(x)
+                                                .ToString()
+                                                .ToUpper())
+                            .ToList();
     }
 
     private void Start()
     {
-        HasDisplayWordChanged = true;
-        //TODO: spawn the missing letters
+        Spawners = GetComponentsInChildren<LetterSpawn>();
+        SpawnLetters();
     }
 
     private void Update()
     {
-        if (!currentWord.Letters.Any(l => l.Missing))
-        {
-            currentWord = GetNextQuestWord();
-            HasDisplayWordChanged = true;
-        }
-
         if (HasDisplayWordChanged)
         {
             wordText.SetText(DisplayWord);
             HasDisplayWordChanged = false;
         }
+    }
+
+    public void CorrectAnswerFound()
+    {
+        CurrentLetter.Missing = false;
+        // Need next letter in current word
+        if (HasLettersMissing)
+        {
+            SpawnLetters();
+        }
+        // Need next word and letter
+        if (currentWordStack.Count > 0 && !HasLettersMissing)
+        {
+            CurrentWord = GetNextQuestWord();
+            SpawnLetters();
+        }
+
+        HasDisplayWordChanged = true;
+
+        //TODO: Game Over Event Triggered
     }
 
     private Stack<Word> ShuffleWordList(WordList currentList)
@@ -55,7 +80,7 @@ public class QuestGenerator : MonoBehaviour
         int rng;
         int numberOfWords = currentList.Words.Count;
 
-        for (int i = numberOfWords - 1; i > 0; i--)
+        for (int i = numberOfWords; i > 0; i--)
         {
             rng = shuffler.Next(0, i + 1);
             wordStack.Push(currentList.Words[rng]);
@@ -85,5 +110,22 @@ public class QuestGenerator : MonoBehaviour
         }
 
         return next;
+    }
+
+    private void SpawnLetters()
+    {
+        var rng = new System.Random();
+
+        foreach (var spawner in Spawners)
+        {
+            spawner.DisplayLetter = Alphabet.ElementAt(rng.Next(0, Alphabet.Count)).First();
+            spawner.IsCorrectAnswer = false;
+        }
+
+        var index = rng.Next(0,Spawners.Length);
+        Spawners[index].DisplayLetter = CurrentLetter.Character;
+        Spawners[index].IsCorrectAnswer = true;
+
+        HasDisplayWordChanged = true;
     }
 }
