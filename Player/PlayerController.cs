@@ -12,6 +12,8 @@ public class PlayerController : MonoBehaviour
     private CollisionSettings playerCollisionSettings;
     [SerializeField]
     private Status status;
+    [SerializeField]
+    private AudioManager audio;
 
     private RaycastOrigins playerRayOrigins;
     private float horizontalMovement;
@@ -74,6 +76,7 @@ public class PlayerController : MonoBehaviour
         rb2d.AddForce(Vector2.up * playerMovementSettings.JumpForce, ForceMode2D.Impulse);
         status.IsJumping = false;
         status.IsGrounded = false;
+        audio.Play("Jump");
     }
 
     private void UpdateBounds()

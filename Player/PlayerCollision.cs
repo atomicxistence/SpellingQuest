@@ -6,6 +6,8 @@ public class PlayerCollision : MonoBehaviour
     private Status status;
     [SerializeField]
     private CollisionSettings collisionSettings;
+    [SerializeField]
+    private AudioManager audio;
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
@@ -14,6 +16,7 @@ public class PlayerCollision : MonoBehaviour
             // LayerMask.value returns a bitmask value
             //gameObject.layer = collisionSettings.WhileDeadLayer.value;
             status.IsDead = true;
+            audio.Play("Death");
         }
     }
 }

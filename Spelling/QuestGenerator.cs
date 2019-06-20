@@ -7,6 +7,8 @@ using TMPro;
 public class QuestGenerator : MonoBehaviour
 {
     [SerializeField]
+    private AudioManager audio;
+    [SerializeField]
     private TMP_Text wordText;
     private Stack<Word> currentWordStack = new Stack<Word>();
     
@@ -55,6 +57,7 @@ public class QuestGenerator : MonoBehaviour
 
     public void CorrectAnswerFound()
     {
+        audio.Play("Correct");
         CurrentLetter.Missing = false;
         // Need next letter in current word
         if (HasLettersMissing)
@@ -62,15 +65,19 @@ public class QuestGenerator : MonoBehaviour
             SpawnLetters();
         }
         // Need next word and letter
-        if (currentWordStack.Count > 0 && !HasLettersMissing)
+        else if (currentWordStack.Count > 0)
         {
+            audio.Play("WordComplete");
             CurrentWord = GetNextQuestWord();
             SpawnLetters();
         }
+        // Game Over
+        else
+        {
+            HasDisplayWordChanged = true;
 
-        HasDisplayWordChanged = true;
-
-        //TODO: Game Over Event Triggered
+            //TODO: Game Over Event Triggered
+        }
     }
 
     private Stack<Word> ShuffleWordList(WordList currentList)
@@ -118,7 +125,9 @@ public class QuestGenerator : MonoBehaviour
 
         foreach (var spawner in Spawners)
         {
-            spawner.DisplayLetter = Alphabet.ElementAt(rng.Next(0, Alphabet.Count)).First();
+            spawner.DisplayLetter = Alphabet.Where(x => x.First() != CurrentLetter.Character)
+                                            .ElementAt(rng.Next(0, Alphabet.Count - 1))
+                                            .First();
             spawner.IsCorrectAnswer = false;
         }
 

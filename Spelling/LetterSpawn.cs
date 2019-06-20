@@ -14,6 +14,7 @@ public class LetterSpawn : MonoBehaviour
     private char _displayLetter;
     [SerializeField]
     private GameEvent answerFound;
+    private ParticleSystem correctAnswerParticles;
 
     public char DisplayLetter 
     { 
@@ -26,13 +27,26 @@ public class LetterSpawn : MonoBehaviour
     }
     public bool IsCorrectAnswer {get; set;}
 
+    private void Start()
+    {
+        correctAnswerParticles = GetComponentInChildren<ParticleSystem>();
+        correctAnswerParticles.enableEmission = false;
+    }
+
     private void OnTriggerEnter2D(Collider2D collider)
     {
         if (IsCorrectAnswer)
         {
-            //TODO: animate trigger
+            correctAnswerParticles.enableEmission = true;
+            StartCoroutine(ParticleTimer(1f));
             IsCorrectAnswer = false;
             answerFound.Raise();
         }
+    }
+
+    private IEnumerator ParticleTimer(float duration)
+    {
+        yield return new WaitForSeconds(duration);
+        correctAnswerParticles.enableEmission = false;
     }
 }
