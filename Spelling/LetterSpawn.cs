@@ -30,14 +30,16 @@ public class LetterSpawn : MonoBehaviour
     private void Start()
     {
         correctAnswerParticles = GetComponentInChildren<ParticleSystem>();
-        correctAnswerParticles.enableEmission = false;
+        var em = correctAnswerParticles.emission;
+        em.enabled = false;
     }
 
     private void OnTriggerEnter2D(Collider2D collider)
     {
         if (IsCorrectAnswer)
         {
-            correctAnswerParticles.enableEmission = true;
+            var em = correctAnswerParticles.emission;
+            em.enabled = true;
             StartCoroutine(ParticleTimer(1f));
             IsCorrectAnswer = false;
             answerFound.Raise();
@@ -47,6 +49,7 @@ public class LetterSpawn : MonoBehaviour
     private IEnumerator ParticleTimer(float duration)
     {
         yield return new WaitForSeconds(duration);
-        correctAnswerParticles.enableEmission = false;
+        var em = correctAnswerParticles.emission;
+        em.enabled = false;
     }
 }

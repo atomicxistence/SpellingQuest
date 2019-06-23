@@ -13,7 +13,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     private Status status;
     [SerializeField]
-    private AudioManager audio;
+    private AudioManager audioManager;
 
     private RaycastOrigins playerRayOrigins;
     private float horizontalMovement;
@@ -22,6 +22,7 @@ public class PlayerController : MonoBehaviour
     {
         rb2d = GetComponent<Rigidbody2D>();
         playerCollider = GetComponent<PolygonCollider2D>();
+        audioManager = FindObjectOfType<AudioManager>();
     }
 
     private void Update()
@@ -76,7 +77,7 @@ public class PlayerController : MonoBehaviour
         rb2d.AddForce(Vector2.up * playerMovementSettings.JumpForce, ForceMode2D.Impulse);
         status.IsJumping = false;
         status.IsGrounded = false;
-        audio.Play("Jump");
+        audioManager.Play("Jump");
     }
 
     private void UpdateBounds()

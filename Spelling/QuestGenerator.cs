@@ -7,10 +7,13 @@ using TMPro;
 public class QuestGenerator : MonoBehaviour
 {
     [SerializeField]
-    private AudioManager audio;
+    private AudioManager audioManager;
     [SerializeField]
     private TMP_Text wordText;
-    private Stack<Word> currentWordStack = new Stack<Word>();
+    [SerializeField]
+    private TMP_Text gameOverText;
+
+    private Stack<Word> currentWordStack;
     
     private string DisplayWord => CurrentWord.Letters.Aggregate("", (accum, next) => accum + (next.Missing ? '_' : next.Character));
     private bool HasDisplayWordChanged {get; set;}
@@ -24,8 +27,9 @@ public class QuestGenerator : MonoBehaviour
 
     private void Awake()
     {
-        var id = RetrieveWordListID();
-        var spellingList = new WordList(id);
+        audioManager = FindObjectOfType<AudioManager>();
+        var questManager = FindObjectOfType<QuestManager>();
+        var spellingList = questManager.SpellingList;
 
         if (spellingList.Words.Count > 0)
         {
@@ -57,7 +61,7 @@ public class QuestGenerator : MonoBehaviour
 
     public void CorrectAnswerFound()
     {
-        audio.Play("Correct");
+        audioManager.Play("Correct");
         CurrentLetter.Missing = false;
         // Need next letter in current word
         if (HasLettersMissing)
@@ -67,7 +71,7 @@ public class QuestGenerator : MonoBehaviour
         // Need next word and letter
         else if (currentWordStack.Count > 0)
         {
-            audio.Play("WordComplete");
+            audioManager.Play("WordComplete");
             CurrentWord = GetNextQuestWord();
             SpawnLetters();
         }
@@ -75,8 +79,8 @@ public class QuestGenerator : MonoBehaviour
         else
         {
             HasDisplayWordChanged = true;
-
-            //TODO: Game Over Event Triggered
+            gameOverText.SetText("QUEST COMPLETED");
+            audioManager.Play("QuestCompleted");
         }
     }
 
@@ -89,17 +93,12 @@ public class QuestGenerator : MonoBehaviour
 
         for (int i = numberOfWords; i > 0; i--)
         {
-            rng = shuffler.Next(0, i + 1);
+            rng = shuffler.Next(0, i);
             wordStack.Push(currentList.Words[rng]);
+            currentList.Words.RemoveAt(rng);
         }
 
         return wordStack;
-    }
-
-    private int RetrieveWordListID()
-    {
-        var idFromURL = Application.absoluteURL?.Split('/').Last();
-        return Int32.TryParse(idFromURL, out int result) ? result : 0; 
     }
 
     private Word GetNextQuestWord()

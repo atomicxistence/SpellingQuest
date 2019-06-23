@@ -1,28 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System.Linq;
+using System.Collections.Generic;
 
 public class WordList
 {
     public List<Word> Words;
 
-    public WordList(int id)
+    public WordList(string[] wordStrings)
     {
-        if (id == 0)
-        {
-            DefaultWordList();
-        }
-        
-        // call API with id
-        // parse JSON
-        // store words in Words
-    }
-
-    private void DefaultWordList()
-    {
-        Words = new List<Word>
-        {
-            new Word("spelling"),
-            new Word("quest"),
-            new Word("default")
-        };
+        Words = wordStrings.Select(x => new Word(x)).ToList();
     }
 }

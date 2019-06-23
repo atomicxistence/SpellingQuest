@@ -31,7 +31,7 @@ public class AudioManager : MonoBehaviour
             sound.source.volume = sound.volume;
             sound.source.loop = sound.loop;
         }
-    }
+     }
 
     private void Start()
     {
