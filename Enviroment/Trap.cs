@@ -9,7 +9,7 @@ public class Trap : MonoBehaviour
 
     private void Awake()
     {
-        audioManager = FindObjectOfType<AudioManager>();
+        audioManager = AudioManager.SharedInstance;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

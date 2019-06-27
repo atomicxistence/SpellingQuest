@@ -11,7 +11,7 @@ public class PlayerCollision : MonoBehaviour
 
     private void Awake()
     {
-        audioManager = FindObjectOfType<AudioManager>();
+        audioManager = AudioManager.SharedInstance;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)

@@ -22,7 +22,7 @@ public class PlayerController : MonoBehaviour
     {
         rb2d = GetComponent<Rigidbody2D>();
         playerCollider = GetComponent<PolygonCollider2D>();
-        audioManager = FindObjectOfType<AudioManager>();
+        audioManager = AudioManager.SharedInstance;
     }
 
     private void Update()

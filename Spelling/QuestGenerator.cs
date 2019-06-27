@@ -12,6 +12,8 @@ public class QuestGenerator : MonoBehaviour
     private TMP_Text wordText;
     [SerializeField]
     private TMP_Text gameOverText;
+    [SerializeField]
+    private GameEvent gameOver;
 
     private Stack<Word> currentWordStack;
     
@@ -27,7 +29,7 @@ public class QuestGenerator : MonoBehaviour
 
     private void Awake()
     {
-        audioManager = FindObjectOfType<AudioManager>();
+        audioManager = AudioManager.SharedInstance;
         var questManager = FindObjectOfType<QuestManager>();
         var spellingList = questManager.SpellingList;
 
@@ -78,6 +80,7 @@ public class QuestGenerator : MonoBehaviour
         // Game Over
         else
         {
+            gameOver.Raise();
             HasDisplayWordChanged = true;
             gameOverText.SetText("QUEST COMPLETED");
             audioManager.Play("QuestCompleted");
