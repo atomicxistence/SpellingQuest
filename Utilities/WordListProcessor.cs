@@ -25,7 +25,7 @@ public class WordListProcessor : MonoBehaviour
 
     public void LoadWordList(int id, Action<WordListModel> callback)
     {
-        var url = $"spellingquestapi.azurewebsites.net/api/WordLists/{id}";
+        var url = $"sq-api.azurewebsites.net/api/WordLists/{id}";
 
         StartCoroutine(GetListFromAPI(url, callback));
     }
